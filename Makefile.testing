@@ -1,0 +1,38 @@
+include .env.testing
+
+TESTING_DOCKER_COMPOSE_FILE ?= docker-compose.testing.yaml
+TESTING_DATABASE_CONTAINER ?= test-pg
+
+TESTING_DOCKER_COMPOSE_COMMAND = docker compose -f ${TESTING_DOCKER_COMPOSE_FILE}
+TESTING_MIGRATE_COMMAND = $(TESTING_DOCKER_COMPOSE_COMMAND) --profile tools run --rm migrate
+
+# ----------------------------
+# API
+# ----------------------------
+
+## Setup testing
+test-setup:
+	$(TESTING_DOCKER_COMPOSE_COMMAND) up -d && make -f Makefile.testing test-mysql-setup	
+	
+## Run API tests
+test:
+	make -f Makefile.testing test-setup
+	sh -c "go test -mod=vendor -coverprofile=c.out -failfast -timeout 5m ./..."
+
+# ----------------------------
+# Testing Database
+# ----------------------------
+## Setup for database for testing
+test-mysql-setup: test-mysql-migrate
+
+## Run test migrations up
+test-mysql-migrate:
+	$(TESTING_MIGRATE_COMMAND) up
+
+## Rollback test migrations
+test-mysql-redo:
+	$(TESTING_MIGRATE_COMMAND) down
+
+## Force migrations to a specific version e.g `make mysql-force version=1`
+test-mysql-force:
+	$(TESTING_MIGRATE_COMMAND) force $(version)

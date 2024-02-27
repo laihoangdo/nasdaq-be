@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  test-mysql:
+    container_name: test-guru-mysql
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: guru-mysql
+      MYSQL_ROOT_PASSWORD: mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 3
+    ports:
+      - "3316:3306"
+    networks:
+      - test-guru-network
+  migrate:
+    image: migrate/migrate:v4.15.2
+    profiles: [ "tools" ]
+    volumes:
+      - ./database/migrations:/migrations
+    entrypoint:
+      [
+        "migrate",
+        "-path",
+        "/migrations",
+        "-database",
+        "mysql://root:mysql@tcp(test-mysql:3306)/guru-mysql?parseTime=true"
+      ]
+    command: [ "up" ]
+    depends_on:
+      test-mysql:
+        condition: service_healthy
+    restart: on-failure
+    networks:
+      - test-guru-network
+networks:
+  test-guru-network:
+    driver: bridge
