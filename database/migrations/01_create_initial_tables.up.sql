@@ -104,17 +104,28 @@ CREATE TABLE `card_info` (
                              `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE `oders` (
+CREATE TABLE `orders` (
                          `id` integer AUTO_INCREMENT PRIMARY KEY,
                          `user_id` integer,
+                        --  random
+                         `sku` integer,
+                         `order_package_id` integer,
                          `coin_code` VARCHAR(250),
---     '60, 120 180, 240, 400'
-                         `time` int,
                          `balance` int,
                          `date` datetime,
                          `is_inprogress` bool,
                         --     thang thua
                          `status` bool ,
+                         `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                         `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `order_package` (
+                         `id` integer AUTO_INCREMENT PRIMARY KEY,
+                        --    '60, 120 180, 240, 400'
+                         `time` integer,
+                        --    '2, 4 8, 10, 25'
+                         `profit_percent` integer ,
                          `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                          `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -153,3 +164,22 @@ CREATE TABLE `package` (
                            `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE `cskh_user_chat` (
+                                   `id` integer AUTO_INCREMENT PRIMARY KEY,
+                                   `user_id` integer,
+                                   `cskh_id` integer,
+                                   `status` bool,
+                                   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `cskh_user_chat_detail` (
+                                   `id` integer AUTO_INCREMENT PRIMARY KEY,
+                                   `cskh_user_chat_id` integer,
+                                   `content` VARCHAR(250),
+                                   `is_image` bool,
+                                   `image_url` VARCHAR(250),
+                                   `status` bool,
+                                   `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
